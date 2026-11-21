@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>רשימת משימות וקניות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #e0e7ff;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Assistant', 'Rubik', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0f4ff 0%, #f9fafb 50%, #f5f3ff 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 16px 60px;
+      color: var(--text-main);
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      padding: 28px 24px 20px;
+      background: linear-gradient(to bottom, #ffffff, #fafafa);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .title-row h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-icon {
+      background: var(--primary-light);
+      color: var(--primary);
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 1.2rem;
+    }
+
+    .badge-counter {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Input Bar */
+    .input-form {
+      display: flex;
+      gap: 10px;
+      position: relative;
+    }
+
+    .input-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .input-box input {
+      width: 100%;
+      height: 52px;
+      padding: 0 18px;
+      font-size: 1.05rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .input-box input:focus {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    .input-box input::placeholder {
+      color: #94a3b8;
+    }
+
+    .add-btn {
+      width: 52px;
+      height: 52px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    }
+
+    .add-btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(79, 70, 229, 0.35);
+    }
+
+    .add-btn:active {
+      transform: translateY(0);
+    }
+
+    .add-btn svg {
+      width: 26px;
+      height: 26px;
+      stroke-width: 2.5;
+    }
+
+    /* Tasks list */
+    .tasks-container {
+      padding: 16px 20px 24px;
+      min-height: 240px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #ffffff;
+      border: 1.5px solid #edf2f7;
+      border-radius: 14px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      animation: slideIn 0.25s ease-out;
+    }
+
+    .task-item:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+      transform: translateY(-1px);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Disappearing animation */
+    .task-item.completing {
+      animation: finishTask 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes finishTask {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+        background: #f0fdf4;
+        border-color: #86efac;
+      }
+      40% {
+        opacity: 0.9;
+        transform: scale(0.98) translateX(-10px);
+        background: #dcfce7;
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.85) translateX(60px);
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: -10px;
+        border-width: 0;
+      }
+    }
+
+    .task-left-content {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    /* Custom Checkbox Square */
+    .check-box {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #cbd5e1;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+      background: #fff;
+    }
+
+    .task-item:hover .check-box {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .check-box svg {
+      width: 16px;
+      height: 16px;
+      color: white;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s ease;
+    }
+
+    .task-item.completing .check-box {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .task-item.completing .check-box svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .task-item.completing .task-text {
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+
+    .task-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #334155;
+      word-break: break-word;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+      user-select: none;
+    }
+
+    /* Delete button on hover */
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.6;
+      transition: all 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      background: #fee2e2;
+      color: var(--danger);
+      opacity: 1;
+    }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      width: 72px;
+      height: 72px;
+      background: #f1f5f9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+      color: #64748b;
+    }
+
+    /* Footer / Undo Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.95rem;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      opacity: 0;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .toast-container.active {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .undo-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #a5b4fc;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .undo-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="header">
+      <div class="title-row">
+        <h1>
+          <span class="title-icon">📋</span>
+          רשימת משימות
+        </h1>
+        <span class="badge-counter" id="taskCounter">0 משימות</span>
+      </div>
+
+      <form class="input-form" id="taskForm" onsubmit="handleAddTask(event)">
+        <div class="input-box">
+          <input 
+            type="text" 
+            id="taskInput" 
+            placeholder="מה צריך לעשות? (לדוגמה: לקנות חלב, לנקות שולחן...)" 
+            autocomplete="off"
+            autofocus
+          />
+        </div>
+        <button type="submit" class="add-btn" title="הוסף משימה" aria-label="הוסף משימה">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <div class="tasks-container">
+      <ul class="task-list" id="taskList">
+        <!-- המשימות יתווספו לכאן באופן דינמי -->
+      </ul>
+
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">🎉</div>
+        <h3>הכל מוכן ונקי!</h3>
+        <p>אין כרגע משימות פתוחות. הוסף משימה חדשה למעלה.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast התראה עם כפתור ביטול למקרה שנלחץ בטעות -->
+  <div class="toast-container" id="toast">
+    <span id="toastMessage">המשימה הושלמה ונמחקה!</span>
+    <button class="undo-btn" id="undoBtn" onclick="undoLastAction()">ביטול</button>
+  </div>
+
+  <script>
+    // מערך המשימות
+    let tasks = [];
+    let lastDeletedTask = null;
+    let toastTimeout = null;
+
+    // צליל פידבק נעים וקצר בלחיצה על סיום (Web Audio API)
+    function playCompleteSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.12); // A5
+
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } catch (e) {
+        // התעלם אם אודיו לא נתמך בדפדפן
+      }
+    }
+
+    // טעינת משימות מ-LocalStorage
+    function loadTasks() {
+      try {
+        const saved = localStorage.getItem('my_todo_tasks');
+        if (saved) {
+          tasks = JSON.parse(saved);
+        } else {
+          // משימות ברירת מחדל לדוגמה
+          tasks = [
+            { id: 1, text: 'לקנות חלב ולחם' },
+            { id: 2, text: 'לסדר את החדר' }
+          ];
+          saveTasks();
+        }
+      } catch (e) {
+        tasks = [];
+      }
+      renderTasks();
+    }
+
+    // שמירה ב-LocalStorage
+    function saveTasks() {
+      try {
+        localStorage.setItem('my_todo_tasks', JSON.stringify(tasks));
+      } catch (e) {
+        console.error('Failed to save to localStorage', e);
+      }
+    }
+
+    // הוספת משימה חדשה
+    function handleAddTask(e) {
+      e.preventDefault();
+      const input = document.getElementById('taskInput');
+      const text = input.value.trim();
+
+      if (!text) {
+        input.focus();
+        return;
+      }
+
+      const newTask = {
+        id: Date.now(),
+        text: text
+      };
+
+      tasks.unshift(newTask); // הוספה לראש הרשימה
+      saveTasks();
+      renderTasks();
+
+      input.value = '';
+      input.focus();
+    }
+
+    // סיום משימה עם אפקט היעלמות (כמו ברשימת קניות)
+    function completeTask(id, element) {
+      if (!element || element.classList.contains('completing')) return;
+
+      playCompleteSound();
+      element.classList.add('completing');
+
+      // שמירה של המשימה לאפשרות ביטול (Undo)
+      const taskIndex = tasks.findIndex(t => t.id === id);
+      if (taskIndex !== -1) {
+        lastDeletedTask = {
+          task: tasks[taskIndex],
+          index: taskIndex
+        };
+      }
+
+      // המתנה לסיום האנימציה ואז מחיקה
+      setTimeout(() => {
+        tasks = tasks.filter(t => t.id !== id);
+        saveTasks();
+        renderTasks();
+        showToast('המשימה סומנה ונמחקה מהרשימה!');
+      }, 420);
+    }
+
+    // מחיקה ישירה
+    function deleteTask(id, e) {
+      e.stopPropagation();
+      const taskIndex = tasks.findIndex(t => t.id === id);
+      if (taskIndex !== -1) {
+        lastDeletedTask = {
+          task: tasks[taskIndex],
+          index: taskIndex
+        };
+      }
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      renderTasks();
+      showToast('המשימה נמחקה');
+    }
+
+    // שחזור המשימה האחרונה
+    function undoLastAction() {
+      if (lastDeletedTask) {
+        tasks.splice(lastDeletedTask.index, 0, lastDeletedTask.task);
+        saveTasks();
+        renderTasks();
+        lastDeletedTask = null;
+        hideToast();
+      }
+    }
+
+    // הצגת הודעת Toast
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      toastMessage.textContent = msg;
+      toast.classList.add('active');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        hideToast();
+      }, 4500);
+    }
+
+    function hideToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.remove('active');
+    }
+
+    // רינדור הרשימה על המסך
+    function renderTasks() {
+      const listEl = document.getElementById('taskList');
+      const emptyState = document.getElementById('emptyState');
+      const counterEl = document.getElementById('taskCounter');
+
+      listEl.innerHTML = '';
+
+      if (tasks.length === 0) {
+        emptyState.style.display = 'flex';
+        counterEl.textContent = 'אין משימות';
+      } else {
+        emptyState.style.display = 'none';
+        counterEl.textContent = tasks.length === 1 ? 'משימה אחת' : `${tasks.length} משימות`;
+
+        tasks.forEach(task => {
+          const li = document.createElement('li');
+          li.className = 'task-item';
+          li.setAttribute('data-id', task.id);
+
+          li.innerHTML = `
+            <div class="task-left-content" onclick="completeTask(${task.id}, this.parentElement)">
+              <div class="check-box" title="סמן כמבוצע">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <span class="task-text">${escapeHtml(task.text)}</span>
+            </div>
+            <button class="delete-btn" onclick="deleteTask(${task.id}, event)" title="מחק משימה" aria-label="מחק">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          `;
+
+          listEl.appendChild(li);
+        });
+      }
+    }
+
+    // הגנה בסיסית מפני XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // הפעלה ראשונית עם טעינת העמוד
+    window.addEventListener('DOMContentLoaded', loadTasks);
+  </script>
+</body>
+</html>
