@@ -6,7 +6,20 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>רשימת משימות - בית, עבודה, אחר</title>
+  <title>משימות</title>
+
+  <!-- הגדרות סמל ושם למסך הבית (iOS & Android) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="application-name" content="משימות">
+  <meta name="apple-mobile-web-app-title" content="משימות">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#4f46e5">
+
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -896,7 +909,7 @@
     }
 
     // מנגנון עדכון אוטומטי ברקע ישירות מהשרת (בלי צורך ברענון ידני)
-    const CURRENT_VERSION = 4;
+    const CURRENT_VERSION = 5;
     async function checkForUpdates() {
       try {
         const res = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
