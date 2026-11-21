@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>רשימת משימות - בית, עבודה, אחר</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -673,19 +676,36 @@
         if (saved) {
           categoryData = JSON.parse(saved);
         } else {
-          // משימות ברירת מחדל
-          categoryData = {
-            home: [
-              { id: 1, text: 'לקנות חלב ולחם' },
-              { id: 2, text: 'לסדר את המטבח' }
-            ],
-            work: [
-              { id: 3, text: 'לענות למיילים דחופים' }
-            ],
-            other: [
-              { id: 4, text: 'לקבוע תור לרופא' }
-            ]
-          };
+          // בדיקה אם יש משימות מהגרסה הקודמת
+          const oldSaved = localStorage.getItem('my_todo_tasks');
+          if (oldSaved) {
+            try {
+              const oldTasks = JSON.parse(oldSaved);
+              categoryData = {
+                home: oldTasks,
+                work: [],
+                other: []
+              };
+            } catch(e) {
+              categoryData = null;
+            }
+          }
+          
+          if (!categoryData || (!categoryData.home?.length && !categoryData.work?.length && !categoryData.other?.length)) {
+            // משימות ברירת מחדל
+            categoryData = {
+              home: [
+                { id: 1, text: 'לקנות חלב ולחם' },
+                { id: 2, text: 'לסדר את המטבח' }
+              ],
+              work: [
+                { id: 3, text: 'לענות למיילים דחופים' }
+              ],
+              other: [
+                { id: 4, text: 'לקבוע תור לרופא' }
+              ]
+            };
+          }
           saveTasks();
         }
       } catch (e) {
