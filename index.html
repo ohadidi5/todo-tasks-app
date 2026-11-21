@@ -895,7 +895,33 @@
       return div.innerHTML;
     }
 
-    window.addEventListener('DOMContentLoaded', loadTasks);
+    // מנגנון עדכון אוטומטי ברקע ישירות מהשרת (בלי צורך ברענון ידני)
+    const CURRENT_VERSION = 4;
+    async function checkForUpdates() {
+      try {
+        const res = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.version && data.version > CURRENT_VERSION) {
+            window.location.reload(true);
+          }
+        }
+      } catch (e) {}
+    }
+
+    // בדיקת עדכונים ברגע שהמסך נדלק/חוזרים לטאב וכל 8 שניות
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkForUpdates();
+      }
+    });
+    window.addEventListener('pageshow', () => checkForUpdates());
+    setInterval(checkForUpdates, 8000);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadTasks();
+      checkForUpdates();
+    });
   </script>
 </body>
 </html>
